@@ -1,36 +1,47 @@
 const express = require("express");
 const router = express.Router();
 const ExcelJS = require("exceljs");
+
 const Company = require("../models/Company");
+const Suggestion = require("../models/Suggestions"); 
+const normalize = require("../utils/normalize");
 
-const Suggestion = require("../models/Suggestions");
+// 🔐 Common Auth Function
+const isAuthorized = (req) => {
+  const key = req.headers["x-admin-key"];
+  return key === process.env.ADMIN_KEY;
+};
 
+//
+// ====================== GET ALL SUGGESTIONS ======================
+//
 router.get("/suggestions", async (req, res) => {
   try {
-    const adminKey = req.headers["x-admin-key"];
-
-    if (adminKey !== process.env.ADMIN_KEY) {
+    if (!isAuthorized(req)) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
     const suggestions = await Suggestion.find().sort({ createdAt: -1 });
     return res.json(suggestions);
+
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error" });
   }
 });
 
-const Company = require("../models/Company");
-const normalize = require("../utils/normalize");
+//
+// ====================== EXPORT SUGGESTIONS ======================
+//
 router.get("/export/suggestions", async (req, res) => {
   try {
-    const adminKey = req.headers["x-admin-key"];
-    if (adminKey !== process.env.ADMIN_KEY) {
+    if (!isAuthorized(req)) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const suggestions = await Suggestion.find();
+    const suggestions = await Suggestion.find({
+  status: { $in: ["new", "duplicate"] }
+});
 
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet("Suggestions");
@@ -56,14 +67,17 @@ router.get("/export/suggestions", async (req, res) => {
     res.end();
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Export failed" });
   }
 });
 
+//
+// ====================== EXPORT COMPANIES ======================
+//
 router.get("/export/companies", async (req, res) => {
   try {
-    const adminKey = req.headers["x-admin-key"];
-    if (adminKey !== process.env.ADMIN_KEY) {
+    if (!isAuthorized(req)) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
@@ -89,14 +103,17 @@ router.get("/export/companies", async (req, res) => {
     res.end();
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Export failed" });
   }
 });
-//  Accept suggestion
+
+//
+// ====================== ACCEPT ======================
+//
 router.post("/accept/:id", async (req, res) => {
   try {
-    const adminKey = req.headers["x-admin-key"];
-    if (adminKey !== process.env.ADMIN_KEY) {
+    if (!isAuthorized(req)) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
@@ -106,7 +123,6 @@ router.post("/accept/:id", async (req, res) => {
       return res.status(404).json({ message: "Suggestion not found" });
     }
 
-    // Add to company list if not already present
     const exists = await Company.findOne({
       normalizedName: suggestion.normalizedName
     });
@@ -129,11 +145,12 @@ router.post("/accept/:id", async (req, res) => {
   }
 });
 
-
+//
+// ====================== REJECT ======================
+//
 router.post("/reject/:id", async (req, res) => {
   try {
-    const adminKey = req.headers["x-admin-key"];
-    if (adminKey !== process.env.ADMIN_KEY) {
+    if (!isAuthorized(req)) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
@@ -144,7 +161,9 @@ router.post("/reject/:id", async (req, res) => {
     res.json({ message: "Rejected successfully" });
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 module.exports = router;

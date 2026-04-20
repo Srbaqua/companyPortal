@@ -21,4 +21,4 @@ const suggestionSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Suggestion", suggestionSchema);
+module.exports = mongoose.model("Suggestions", suggestionSchema);
