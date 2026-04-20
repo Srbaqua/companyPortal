@@ -49,7 +49,7 @@ function HomeView({ onOpenForm }: { onOpenForm: () => void }) {
       {/* Top bar */}
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/30 to-indigo-500/10 ring-1 ring-white/10">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-blue-500/30 to-indigo-500/10 ring-1 ring-white/10">
             <GraduationCap className="h-4 w-4 text-blue-300" />
           </div>
           <span
@@ -61,7 +61,7 @@ function HomeView({ onOpenForm }: { onOpenForm: () => void }) {
         </div>
         <div className="hidden items-center gap-2 text-xs text-zinc-500 md:flex">
           <Sparkles className="h-3.5 w-3.5" />
-          <span>Confidential recommendations</span>
+          <span>Computer Science and Engineering</span>
         </div>
       </header>
 
@@ -71,7 +71,7 @@ function HomeView({ onOpenForm }: { onOpenForm: () => void }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.6 }}
-          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[11px] uppercase tracking-widest text-zinc-300 backdrop-blur-md"
+          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/3 px-3 py-1 text-[11px] uppercase tracking-widest text-zinc-300 backdrop-blur-md"
         >
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
           Live · Academic Year 2025-26
@@ -97,8 +97,8 @@ function HomeView({ onOpenForm }: { onOpenForm: () => void }) {
           transition={{ delay: 0.25, duration: 0.7 }}
           className="mt-6 max-w-xl text-lg text-zinc-400"
         >
-          Submit your placement recommendations or manage the admin dashboard —
-          built for the students and team behind NIT Hamirpur Placements.
+          Submit your placement recommendations or manage the admin dashboard. 
+          Built for the students and team behind NIT Hamirpur Placements.
         </motion.p>
       </div>
 
@@ -175,11 +175,11 @@ function BentoCard({
     >
       {/* Accent glow */}
       <div
-        className={`pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full bg-gradient-to-br ${accent} blur-3xl transition-opacity duration-500 group-hover:opacity-100 opacity-70`}
+        className={`pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full bg-linear-to-br ${accent} blur-3xl transition-opacity duration-500 group-hover:opacity-100 opacity-70`}
       />
 
       <div className="flex items-center justify-between">
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-white/10">
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/4 ring-1 ring-white/10">
           {icon}
         </div>
         <span className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">
@@ -194,7 +194,7 @@ function BentoCard({
 
       <div className="mt-10 flex items-center justify-between">
         <span className="text-sm font-medium text-zinc-300">{cta}</span>
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/[0.04] ring-1 ring-white/10 transition-transform duration-300 group-hover:translate-x-1 group-hover:translate-y-[-2px] group-hover:bg-white/[0.08]">
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/4 ring-1 ring-white/10 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-0.5 group-hover:bg-white/8">
           <ArrowUpRight className="h-4 w-4 text-white" />
         </span>
       </div>
@@ -271,7 +271,7 @@ function FormView({ goBack }: { goBack: () => void }) {
       </button>
 
       <div className="mt-10 flex items-center gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/30 to-indigo-500/10 ring-1 ring-white/10">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-blue-500/30 to-indigo-500/10 ring-1 ring-white/10">
           <Building2 className="h-5 w-5 text-blue-300" />
         </div>
         <div>
@@ -296,7 +296,7 @@ function FormView({ goBack }: { goBack: () => void }) {
           required
           value={form.companyName}
           onChange={handleChange}
-          placeholder="e.g. Goldman Sachs"
+          placeholder="e.g. Amazon"
           testId="input-company-name"
         />
         <Field
@@ -305,7 +305,7 @@ function FormView({ goBack }: { goBack: () => void }) {
           required
           value={form.studentName}
           onChange={handleChange}
-          placeholder="e.g. Rahul Sharma"
+          placeholder="e.g. Saurabh"
           testId="input-student-name"
         />
         <Field
@@ -332,7 +332,7 @@ function FormView({ goBack }: { goBack: () => void }) {
             data-testid="input-reason"
             rows={4}
             placeholder="Why should this company be invited?"
-            className="w-full resize-none rounded-lg border border-white/[0.1] bg-black/40 px-4 py-3 text-sm text-white placeholder-zinc-500 transition-all focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+            className="w-full resize-none rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder-zinc-500 transition-all focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
           />
         </div>
 
@@ -340,7 +340,7 @@ function FormView({ goBack }: { goBack: () => void }) {
           type="submit"
           disabled={loading}
           data-testid="submit-suggestion-button"
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3.5 font-medium text-white shadow-lg shadow-blue-900/30 transition-all hover:scale-[1.01] hover:from-blue-500 hover:to-indigo-500 hover:shadow-blue-900/50 focus:ring-2 focus:ring-blue-500/50 disabled:opacity-60"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-600 to-indigo-600 px-6 py-3.5 font-medium text-white shadow-lg shadow-blue-900/30 transition-all hover:scale-[1.01] hover:from-blue-500 hover:to-indigo-500 hover:shadow-blue-900/50 focus:ring-2 focus:ring-blue-500/50 disabled:opacity-60"
         >
           {loading ? (
             <>
@@ -388,7 +388,7 @@ function Field({
         onChange={onChange}
         placeholder={placeholder}
         data-testid={testId}
-        className="w-full rounded-lg border border-white/[0.1] bg-black/40 px-4 py-3 text-sm text-white placeholder-zinc-500 transition-all focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+        className="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder-zinc-500 transition-all focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
       />
     </div>
   );

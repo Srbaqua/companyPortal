@@ -1,3 +1,4 @@
+@import "tailwindcss";
 
 :root {
   --font-heading: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
