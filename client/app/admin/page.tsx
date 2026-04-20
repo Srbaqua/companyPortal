@@ -21,18 +21,15 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<
     "new" | "approved" | "rejected"
   >("new");
-
-  const [toast, setToast] = useState<string>("");
+  const [toast, setToast] = useState("");
 
   const showToast = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(""), 2500);
   };
 
-  // 🔐 LOGIN + LOAD
   const loadSuggestions = async () => {
     setLoading(true);
-
     try {
       const res = await fetch(`${API}/api/admin/suggestions`, {
         headers: { "x-admin-key": adminKey },
@@ -48,17 +45,14 @@ export default function AdminPage() {
 
       setSuggestions(data);
       setIsAuth(true);
-      showToast(" Loaded successfully");
+      showToast(" Welcome Admin");
     } catch {
-      showToast(" Server error");
+      showToast(" Server Error");
     }
-
     setLoading(false);
   };
 
-  // ✅ Accept
   const handleAccept = async (id: string) => {
-    setLoading(true);
     await fetch(`${API}/api/admin/accept/${id}`, {
       method: "POST",
       headers: { "x-admin-key": adminKey },
@@ -67,9 +61,7 @@ export default function AdminPage() {
     loadSuggestions();
   };
 
-  // ❌ Reject
   const handleReject = async (id: string) => {
-    setLoading(true);
     await fetch(`${API}/api/admin/reject/${id}`, {
       method: "POST",
       headers: { "x-admin-key": adminKey },
@@ -78,7 +70,6 @@ export default function AdminPage() {
     loadSuggestions();
   };
 
-  // 📥 Download
   const downloadFile = async (url: string, filename: string) => {
     const res = await fetch(url, {
       headers: { "x-admin-key": adminKey },
@@ -91,12 +82,11 @@ export default function AdminPage() {
 
     const blob = await res.blob();
     const link = document.createElement("a");
-    link.href = window.URL.createObjectURL(blob);
+    link.href = URL.createObjectURL(blob);
     link.download = filename;
     link.click();
   };
 
-  // 🔍 Filter
   const filtered = suggestions.filter((s) => {
     if (activeTab === "new") {
       return s.status === "new" || s.status === "duplicate";
@@ -105,118 +95,112 @@ export default function AdminPage() {
   });
 
   return (
-    <main style={styles.container}>
-      <h1 style={styles.title}>📊 Admin Dashboard</h1>
-
-      {/* 🔔 Toast */}
+    <div style={styles.bg}>
+      {/* Toast */}
       {toast && <div style={styles.toast}>{toast}</div>}
 
-      {/* 🔐 LOGIN */}
-      {!isAuth && (
-        <div style={styles.loginBox}>
-          <input
-            placeholder="Enter Admin Key"
-            value={adminKey}
-            onChange={(e) => setAdminKey(e.target.value)}
-            style={styles.input}
-          />
-          <button onClick={loadSuggestions} style={styles.button}>
-            {loading ? "Loading..." : "Enter"}
-          </button>
-        </div>
-      )}
+      <div style={styles.container}>
+        <h1 style={styles.title}>Company Dashboard</h1>
 
-      {/* 🧠 DASHBOARD */}
-      {isAuth && (
-        <>
-          {/* 📥 Export */}
-          <div style={styles.row}>
-            <button
-              style={styles.button}
-              onClick={() =>
-                downloadFile(
-                  `${API}/api/admin/export/suggestions`,
-                  "suggestions.xlsx"
-                )
-              }
-            >
-               Suggestions
-            </button>
-
-            <button
-              style={styles.button}
-              onClick={() =>
-                downloadFile(
-                  `${API}/api/admin/export/companies`,
-                  "companies.xlsx"
-                )
-              }
-            >
-               Companies
+        {!isAuth ? (
+          <div style={styles.glassCard}>
+            <input
+              placeholder="Enter Admin Key"
+              value={adminKey}
+              onChange={(e) => setAdminKey(e.target.value)}
+              style={styles.input}
+            />
+            <button onClick={loadSuggestions} style={styles.primaryBtn}>
+              {loading ? "Loading..." : "Enter"}
             </button>
           </div>
-
-          {/* 🧭 Tabs */}
-          <div style={styles.tabs}>
-            {["new", "approved", "rejected"].map((tab) => (
+        ) : (
+          <>
+            {/* Export */}
+            <div style={styles.row}>
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab as any)}
-                style={{
-                  ...styles.tab,
-                  background:
-                    activeTab === tab ? "#0070f3" : "#eaeaea",
-                  color: activeTab === tab ? "white" : "black",
-                }}
+                style={styles.secondaryBtn}
+                onClick={() =>
+                  downloadFile(
+                    `${API}/api/admin/export/suggestions`,
+                    "suggestions.xlsx"
+                  )
+                }
               >
-                {tab === "new"
-                  ? " New"
-                  : tab === "approved"
-                  ? " Accepted"
-                  : " Rejected"}
+                📥 Suggestions
               </button>
-            ))}
-          </div>
 
-          {/* 📋 List */}
-          <div style={styles.grid}>
-            {filtered.length === 0 ? (
-              <p>No data</p>
-            ) : (
-              filtered.map((item) => (
-                <div key={item._id} style={styles.card}>
-                  <h3>{item.companyName}</h3>
-                  <p>
-                    {item.studentName} • {item.branch}
-                  </p>
-                  <p>Status: {item.status}</p>
+              <button
+                style={styles.secondaryBtn}
+                onClick={() =>
+                  downloadFile(
+                    `${API}/api/admin/export/companies`,
+                    "companies.xlsx"
+                  )
+                }
+              >
+                📥 Companies
+              </button>
+            </div>
 
-                  {item.status === "new" ||
-                  item.status === "duplicate" ? (
-                    <div style={styles.row}>
-                      <button
-                        style={styles.accept}
-                        onClick={() => handleAccept(item._id)}
-                      >
-                        Accept
-                      </button>
-                      <button
-                        style={styles.reject}
-                        onClick={() => handleReject(item._id)}
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  ) : (
-                    <p style={{ color: "green" }}>✔ Processed</p>
-                  )}
-                </div>
-              ))
-            )}
-          </div>
-        </>
-      )}
-    </main>
+            {/* Tabs */}
+            <div style={styles.tabs}>
+              {["new", "approved", "rejected"].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab as any)}
+                  style={{
+                    ...styles.tab,
+                    ...(activeTab === tab ? styles.activeTab : {}),
+                  }}
+                >
+                  {tab === "new"
+                    ? "New"
+                    : tab === "approved"
+                    ? "Accepted"
+                    : "Rejected"}
+                </button>
+              ))}
+            </div>
+
+            {/* Cards */}
+            <div style={styles.grid}>
+              {filtered.length === 0 ? (
+                <p style={{ color: "#aaa" }}>No data available</p>
+              ) : (
+                filtered.map((item) => (
+                  <div key={item._id} style={styles.card}>
+                    <h3>{item.companyName}</h3>
+                    <p>
+                      {item.studentName} • {item.branch}
+                    </p>
+                    <span style={styles.status}>{item.status}</span>
+
+                    {(item.status === "new" ||
+                      item.status === "duplicate") && (
+                      <div style={styles.row}>
+                        <button
+                          style={styles.accept}
+                          onClick={() => handleAccept(item._id)}
+                        >
+                          Accept
+                        </button>
+                        <button
+                          style={styles.reject}
+                          onClick={() => handleReject(item._id)}
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -224,36 +208,53 @@ export default function AdminPage() {
 // 🎨 STYLES
 //
 const styles: any = {
-  container: {
-    maxWidth: 900,
-    margin: "40px auto",
+  bg: {
+    minHeight: "100vh",
+    background:
+      "linear-gradient(135deg, #0f172a, #1e293b, #020617)",
+    color: "white",
     padding: 20,
-    fontFamily: "Arial",
+  },
+  container: {
+    maxWidth: 1000,
+    margin: "0 auto",
   },
   title: {
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 30,
+    fontSize: 28,
+    fontWeight: "bold",
   },
-  loginBox: {
+  glassCard: {
+    backdropFilter: "blur(10px)",
+    background: "rgba(255,255,255,0.05)",
+    padding: 20,
+    borderRadius: 12,
     display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
     gap: 10,
+    justifyContent: "center",
   },
   input: {
     padding: 10,
+    borderRadius: 8,
+    border: "none",
     width: 250,
   },
-  button: {
-    padding: "8px 16px",
+  primaryBtn: {
+    padding: "10px 18px",
+    background: "#6366f1",
+    border: "none",
+    borderRadius: 8,
+    color: "white",
     cursor: "pointer",
-    borderRadius: 6,
-    border: "1px solid #ccc",
   },
-  row: {
-    display: "flex",
-    gap: 10,
-    marginBottom: 20,
+  secondaryBtn: {
+    padding: "8px 14px",
+    borderRadius: 8,
+    background: "#334155",
+    border: "none",
+    color: "white",
+    cursor: "pointer",
   },
   tabs: {
     display: "flex",
@@ -262,43 +263,55 @@ const styles: any = {
   },
   tab: {
     padding: "8px 16px",
-    borderRadius: 6,
-    border: "none",
+    borderRadius: 20,
+    background: "#334155",
     cursor: "pointer",
+    border: "none",
+  },
+  activeTab: {
+    background: "#6366f1",
   },
   grid: {
     display: "grid",
-    gap: 12,
+    gap: 16,
   },
   card: {
-    padding: 12,
-    border: "1px solid #ddd",
-    borderRadius: 8,
-    background: "#fafafa",
+    background: "rgba(255,255,255,0.05)",
+    padding: 16,
+    borderRadius: 12,
+    backdropFilter: "blur(6px)",
+  },
+  row: {
+    display: "flex",
+    gap: 10,
+    marginTop: 10,
   },
   accept: {
-    background: "#4caf50",
-    color: "white",
-    padding: "6px 12px",
+    background: "#22c55e",
     border: "none",
-    borderRadius: 5,
+    padding: "6px 12px",
+    borderRadius: 6,
+    color: "white",
     cursor: "pointer",
   },
   reject: {
-    background: "#f44336",
-    color: "white",
-    padding: "6px 12px",
+    background: "#ef4444",
     border: "none",
-    borderRadius: 5,
+    padding: "6px 12px",
+    borderRadius: 6,
+    color: "white",
     cursor: "pointer",
+  },
+  status: {
+    fontSize: 12,
+    opacity: 0.7,
   },
   toast: {
     position: "fixed",
     top: 20,
     right: 20,
-    background: "#333",
-    color: "white",
+    background: "#111827",
     padding: "10px 16px",
-    borderRadius: 6,
+    borderRadius: 8,
   },
 };
