@@ -225,33 +225,45 @@ const styles: any = {
     background:
       "linear-gradient(135deg, #0f172a, #1e293b, #020617)",
     color: "white",
-    padding: 20,
+   padding: "20px 12px"
   },
   container: {
-    maxWidth: 1000,
+    maxWidth: "1000px",
+width: "100%",
+padding: "0 16px",
     margin: "0 auto",
   },
-  title: {
-    textAlign: "center",
-    marginBottom: 30,
-    fontSize: 28,
-    fontWeight: "bold",
-  },
-  glassCard: {
-    backdropFilter: "blur(10px)",
+title: {
+  textAlign: "center",
+  marginBottom: 30,
+  fontSize: "clamp(20px, 4vw, 32px)",
+  fontWeight: "bold",
+},
+//   glassCard: {
+//     backdropFilter: "blur(10px)",
+//     background: "rgba(255,255,255,0.05)",
+//     padding: 20,
+//     borderRadius: 12,
+//     display: "flex",
+//     gap: 10,
+//     justifyContent: "center",
+//   },
+glassCard: {
+        backdropFilter: "blur(10px)",
     background: "rgba(255,255,255,0.05)",
     padding: 20,
     borderRadius: 12,
-    display: "flex",
-    gap: 10,
-    justifyContent: "center",
-  },
-  input: {
-    padding: 10,
-    borderRadius: 8,
-    border: "none",
-    width: 250,
-  },
+  display: "flex",
+  flexWrap: "wrap",
+  gap: 10,
+  justifyContent: "center",
+},
+input: {
+  padding: 10,
+  borderRadius: 8,
+  border: "none",
+  width: "100%",  
+},
   primaryBtn: {
     padding: "10px 18px",
     background: "#6366f1",
@@ -260,12 +272,12 @@ const styles: any = {
     color: "white",
     cursor: "pointer",
   },
-  topRow: {
-    display: "flex",
-    justifyContent: "flex-start",
-    gap: 10,
-    marginBottom: 20,
-  },
+topRow: {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: 10,
+  justifyContent: "space-between",
+},
   secondaryBtn: {
     padding: "8px 14px",
     borderRadius: 8,
@@ -295,8 +307,9 @@ const styles: any = {
   },
   card: {
     background: "rgba(255,255,255,0.05)",
-    padding: 16,
+    // padding: 16,
     borderRadius: 12,
+      padding: "14px 16px",
     backdropFilter: "blur(6px)",
   },
   cardHeader: {
@@ -316,12 +329,12 @@ const styles: any = {
     color: "#cbd5f5",
     fontSize: 14,
   },
-  actionRow: {
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: 10,
-    marginTop: 12,
-  },
+actionRow: {
+  display: "flex",
+  flexWrap: "wrap",
+  justifyContent: "flex-end",
+  gap: 10,
+},
   accept: {
     background: "#22c55e",
     border: "none",

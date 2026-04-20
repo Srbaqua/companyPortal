@@ -1,16 +1,55 @@
 "use client";
 
-import { useState, ChangeEvent, FormEvent } from "react";
-
-type FormData = {
-  companyName: string;
-  studentName: string;
-  branch: string;
-  reason: string;
-};
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const [form, setForm] = useState<FormData>({
+  const router = useRouter();
+  const [mode, setMode] = useState<"home" | "form">("home");
+
+  return (
+    <div style={styles.bg}>
+      <div style={styles.container}>
+        {mode === "home" ? (
+          <>
+            <h1 style={styles.title}>Company Portal</h1>
+            <p style={styles.subtitle}>
+              Suggest companies or manage requests
+            </p>
+
+            <div style={styles.cardGrid}>
+              {/* Public */}
+              <div
+                style={styles.card}
+                onClick={() => setMode("form")}
+              >
+                <h2>👨‍🎓 Suggest Company</h2>
+                <p>Recommend companies for placements</p>
+              </div>
+
+              {/* Admin */}
+              <div
+                style={styles.card}
+                onClick={() => router.push("/admin")}
+              >
+                <h2>👨‍💼 Admin Panel</h2>
+                <p>Manage suggestions & export data</p>
+              </div>
+            </div>
+          </>
+        ) : (
+          <FormView goBack={() => setMode("home")} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+//
+// 📄 FORM COMPONENT
+//
+function FormView({ goBack }: { goBack: () => void }) {
+  const [form, setForm] = useState({
     companyName: "",
     studentName: "",
     branch: "",
@@ -25,17 +64,15 @@ export default function Home() {
     setTimeout(() => setToast(""), 2500);
   };
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
 
     if (!form.companyName || !form.studentName || !form.branch) {
-      showToast(" Fill all required fields");
+      showToast("❌ Fill all required fields");
       return;
     }
 
@@ -52,72 +89,68 @@ export default function Home() {
       );
 
       const data = await res.json();
+      showToast(data.message || "Submitted");
 
-      if (!res.ok) {
-        showToast(" Failed to submit");
-      } else {
-        showToast(data.message || "✅ Submitted");
-
-        setForm({
-          companyName: "",
-          studentName: "",
-          branch: "",
-          reason: "",
-        });
-      }
+      setForm({
+        companyName: "",
+        studentName: "",
+        branch: "",
+        reason: "",
+      });
     } catch {
-      showToast(" Server error");
+      showToast("❌ Server error");
     }
 
     setLoading(false);
   };
 
   return (
-    <div style={styles.bg}>
-      {/* 🔔 Toast */}
+    <div>
       {toast && <div style={styles.toast}>{toast}</div>}
 
-      <div style={styles.container}>
-        <h1 style={styles.title}>Suggest a Company</h1>
+      <button onClick={goBack} style={styles.backBtn}>
+        ← Back
+      </button>
 
-        <form onSubmit={handleSubmit} style={styles.card}>
-          <input
-            name="companyName"
-            placeholder="Company Name *"
-            value={form.companyName}
-            onChange={handleChange}
-            style={styles.input}
-          />
+      <h2 style={{ marginBottom: 20 }}>Suggest a Company</h2>
 
-          <input
-            name="studentName"
-            placeholder="Your Name *"
-            value={form.studentName}
-            onChange={handleChange}
-            style={styles.input}
-          />
+      <form onSubmit={handleSubmit} style={styles.formCard}>
+        <input
+          name="companyName"
+          placeholder="Company Name *"
+          value={form.companyName}
+          onChange={handleChange}
+          style={styles.input}
+        />
 
-          <input
-            name="branch"
-            placeholder="Branch *"
-            value={form.branch}
-            onChange={handleChange}
-            style={styles.input}
-          />
+        <input
+          name="studentName"
+          placeholder="Your Name *"
+          value={form.studentName}
+          onChange={handleChange}
+          style={styles.input}
+        />
 
-          <textarea
-            name="reason"
-            placeholder="Why should this company visit? (optional)"
-            value={form.reason}
-            onChange={handleChange}
-            style={styles.textarea}
-          />
+        <input
+          name="branch"
+          placeholder="Branch *"
+          value={form.branch}
+          onChange={handleChange}
+          style={styles.input}
+        />
 
-          <button type="submit" style={styles.button}>
-            {loading ? "Submitting..." : "Submit"}
-          </button>
-        </form>
-      </div>
+        <textarea
+          name="reason"
+          placeholder="Reason (optional)"
+          value={form.reason}
+          onChange={handleChange}
+          style={styles.textarea}
+        />
+
+        <button style={styles.primaryBtn}>
+          {loading ? "Submitting..." : "Submit"}
+        </button>
+      </form>
     </div>
   );
 }
@@ -133,48 +166,76 @@ const styles: any = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
     color: "white",
+    // padding: 20,
+    padding: "20px 12px"
   },
   container: {
     width: "100%",
-    maxWidth: 500,
-  },
-  title: {
+    maxWidth: "1000px",
+padding: "0 16px",
     textAlign: "center",
-    marginBottom: 20,
-    fontSize: 28,
-    fontWeight: "bold",
   },
+title: {
+  textAlign: "center",
+  marginBottom: 30,
+  fontSize: "clamp(20px, 4vw, 32px)",
+  fontWeight: "bold",
+},
+  subtitle: {
+    color: "#94a3b8",
+    marginBottom: 30,
+  },
+cardGrid: {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+  gap: 20,
+},
   card: {
-    backdropFilter: "blur(12px)",
     background: "rgba(255,255,255,0.05)",
-    padding: 20,
+    padding: "14px 16px",
     borderRadius: 14,
-    display: "grid",
-    gap: 12,
+    cursor: "pointer",
+    transition: "0.3s",
   },
+  // card: {
+//   background: "rgba(255,255,255,0.05)",
+//   padding: "14px 16px",
+//   borderRadius: 12,
+// },
+formCard: {
+  width: "100%",
+  maxWidth: 500,
+  margin: "0 auto",
+  display: "grid",
+  gap: 12,
+},
   input: {
     padding: 10,
     borderRadius: 8,
     border: "none",
-    outline: "none",
+    width:'100%',
   },
   textarea: {
     padding: 10,
     borderRadius: 8,
     border: "none",
-    outline: "none",
     minHeight: 80,
   },
-  button: {
-    padding: "10px",
-    borderRadius: 8,
-    border: "none",
+  primaryBtn: {
+    padding: 10,
     background: "#6366f1",
+    border: "none",
+    borderRadius: 8,
     color: "white",
     cursor: "pointer",
-    fontWeight: "bold",
+  },
+  backBtn: {
+    marginBottom: 20,
+    background: "transparent",
+    border: "none",
+    color: "#94a3b8",
+    cursor: "pointer",
   },
   toast: {
     position: "fixed",
