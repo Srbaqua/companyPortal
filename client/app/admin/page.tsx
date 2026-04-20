@@ -38,16 +38,16 @@ export default function AdminPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        showToast(" Invalid Admin Key");
+        showToast("❌ Invalid Admin Key");
         setLoading(false);
         return;
       }
 
       setSuggestions(data);
       setIsAuth(true);
-      showToast(" Welcome Admin");
+      showToast("✅ Welcome Admin");
     } catch {
-      showToast(" Server Error");
+      showToast("❌ Server Error");
     }
     setLoading(false);
   };
@@ -57,7 +57,7 @@ export default function AdminPage() {
       method: "POST",
       headers: { "x-admin-key": adminKey },
     });
-    showToast(" Accepted");
+    showToast("✅ Accepted");
     loadSuggestions();
   };
 
@@ -66,7 +66,7 @@ export default function AdminPage() {
       method: "POST",
       headers: { "x-admin-key": adminKey },
     });
-    showToast(" Rejected");
+    showToast("❌ Rejected");
     loadSuggestions();
   };
 
@@ -76,7 +76,7 @@ export default function AdminPage() {
     });
 
     if (!res.ok) {
-      showToast(" Unauthorized");
+      showToast("❌ Unauthorized");
       return;
     }
 
@@ -96,7 +96,6 @@ export default function AdminPage() {
 
   return (
     <div style={styles.bg}>
-      {/* Toast */}
       {toast && <div style={styles.toast}>{toast}</div>}
 
       <div style={styles.container}>
@@ -116,33 +115,8 @@ export default function AdminPage() {
           </div>
         ) : (
           <>
-            {/* Export */}
-            <div style={styles.row}>
-              <button
-                style={styles.secondaryBtn}
-                onClick={() =>
-                  downloadFile(
-                    `${API}/api/admin/export/suggestions`,
-                    "suggestions.xlsx"
-                  )
-                }
-              >
-                📥 Suggestions
-              </button>
-
-              <button
-                style={styles.secondaryBtn}
-                onClick={() =>
-                  downloadFile(
-                    `${API}/api/admin/export/companies`,
-                    "companies.xlsx"
-                  )
-                }
-              >
-                📥 Companies
-              </button>
-            </div>
-
+           
+ 
             {/* Tabs */}
             <div style={styles.tabs}>
               {["new", "approved", "rejected"].map((tab) => (
@@ -162,7 +136,32 @@ export default function AdminPage() {
                 </button>
               ))}
             </div>
+{/* Export */}
+            <div style={styles.topRow}>
+              <button
+                style={styles.secondaryBtn}
+                onClick={() =>
+                  downloadFile(
+                    `${API}/api/admin/export/suggestions`,
+                    "suggestions.xlsx"
+                  )
+                }
+              >
+                ⬇️ Suggestions Download
+              </button>
 
+              <button
+                style={styles.secondaryBtn}
+                onClick={() =>
+                  downloadFile(
+                    `${API}/api/admin/export/companies`,
+                    "companies.xlsx"
+                  )
+                }
+              >
+                ⬇️ Full Database Download
+              </button>
+            </div>
             {/* Cards */}
             <div style={styles.grid}>
               {filtered.length === 0 ? (
@@ -170,32 +169,45 @@ export default function AdminPage() {
               ) : (
                 filtered.map((item) => (
                   <div key={item._id} style={styles.card}>
-                    <h3>{item.companyName}</h3>
-                    <p>
+                    {/* Header */}
+                    <div style={styles.cardHeader}>
+                      <h3>{item.companyName}</h3>
+                      <span style={styles.statusBadge}>
+                        {item.status}
+                      </span>
+                    </div>
+
+                    <p style={styles.meta}>
                       {item.studentName} • {item.branch}
                     </p>
-                    <span style={styles.status}>{item.status}</span>
 
+                    {/* Actions */}
                     {(item.status === "new" ||
                       item.status === "duplicate") && (
-                      <div style={styles.row}>
+                      <div style={styles.actionRow}>
                         <button
                           style={styles.accept}
                           onClick={() => handleAccept(item._id)}
                         >
-                          Accept
+                          ✔ Accept
                         </button>
                         <button
                           style={styles.reject}
                           onClick={() => handleReject(item._id)}
                         >
-                          Reject
+                          ✖ Reject
                         </button>
                       </div>
                     )}
+                    
                   </div>
+                  
                 ))
-              )}
+                
+                
+              )
+              }
+              
             </div>
           </>
         )}
@@ -248,6 +260,12 @@ const styles: any = {
     color: "white",
     cursor: "pointer",
   },
+  topRow: {
+    display: "flex",
+    justifyContent: "flex-start",
+    gap: 10,
+    marginBottom: 20,
+  },
   secondaryBtn: {
     padding: "8px 14px",
     borderRadius: 8,
@@ -281,30 +299,44 @@ const styles: any = {
     borderRadius: 12,
     backdropFilter: "blur(6px)",
   },
-  row: {
+  cardHeader: {
     display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 6,
+  },
+  statusBadge: {
+    fontSize: 12,
+    padding: "4px 8px",
+    borderRadius: 6,
+    background: "#1e293b",
+    opacity: 0.8,
+  },
+  meta: {
+    color: "#cbd5f5",
+    fontSize: 14,
+  },
+  actionRow: {
+    display: "flex",
+    justifyContent: "flex-end",
     gap: 10,
-    marginTop: 10,
+    marginTop: 12,
   },
   accept: {
     background: "#22c55e",
     border: "none",
-    padding: "6px 12px",
-    borderRadius: 6,
+    padding: "8px 14px",
+    borderRadius: 8,
     color: "white",
     cursor: "pointer",
   },
   reject: {
     background: "#ef4444",
     border: "none",
-    padding: "6px 12px",
-    borderRadius: 6,
+    padding: "8px 14px",
+    borderRadius: 8,
     color: "white",
     cursor: "pointer",
-  },
-  status: {
-    fontSize: 12,
-    opacity: 0.7,
   },
   toast: {
     position: "fixed",
