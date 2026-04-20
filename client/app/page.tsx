@@ -305,7 +305,7 @@ function FormView({ goBack }: { goBack: () => void }) {
           required
           value={form.studentName}
           onChange={handleChange}
-          placeholder="e.g. Rahul Sharma"
+          placeholder="e.g. Saurabh"
           testId="input-student-name"
         />
         <Field
